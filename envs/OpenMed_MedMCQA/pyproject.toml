@@ -1,0 +1,16 @@
+[project]
+name = "OpenMed_MedMCQA"
+description = "Single-turn medical MCQ environment for MedMCQA with CoT and boxed letter"
+tags = ["openmed", "medmcqa", "multiple-choice", "single-turn", "think", "boxed-letter", "train", "eval"]
+version = "0.1.6"
+dependencies = [
+    "verifiers>=0.1.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["OpenMed_MedMCQA.py"]
+

@@ -1,0 +1,18 @@
+[project]
+name = "GoodSirMath8k"
+description = "Just GSM8K with the added reward based on how shakespearean the model is."
+tags = ["math", "gsm8k", "single-turn", "think", "old-english"]
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "verifiers>=0.1.3.post0",
+    "transformers",
+    "torch"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["GoodSirMath8k.py"]

@@ -1,0 +1,113 @@
+{
+  "word": "snorkel",
+  "difficulty": 0.412,
+  "frequency": 2.68,
+  "won": false,
+  "final_guess": "pen",
+  "n_questions": 20,
+  "n_invalid": 3,
+  "reward": 0.0,
+  "optimality_gap": 6,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it air?",
+      "a": "No",
+      "turn": 2
+    },
+    {
+      "q": "Is it an energy phenomenon?",
+      "a": "No",
+      "turn": 3
+    },
+    {
+      "q": "Is it a man-made object?",
+      "a": "Yes",
+      "turn": 4
+    },
+    {
+      "q": "Is it located outside Earth?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it an electronic device?",
+      "a": "No",
+      "turn": 6
+    },
+    {
+      "q": "Is it pen?",
+      "a": "No",
+      "turn": 7
+    },
+    {
+      "q": "Is it made of glass?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Is it made of stone?",
+      "a": "No",
+      "turn": 9
+    },
+    {
+      "q": "Is it made of ceramic?",
+      "a": "No",
+      "turn": 10
+    },
+    {
+      "q": "Is it primarily used for decoration?",
+      "a": "No",
+      "turn": 11
+    },
+    {
+      "q": "Is it made of leather?",
+      "a": "No",
+      "turn": 12
+    },
+    {
+      "q": "Is it made of fabric?",
+      "a": "No",
+      "turn": 13
+    },
+    {
+      "q": "Is it circular?",
+      "a": "No",
+      "turn": 14
+    },
+    {
+      "q": "Is it used for reading?",
+      "a": "No",
+      "turn": 15
+    },
+    {
+      "q": "Is it made of metal?",
+      "a": "No",
+      "turn": 16
+    },
+    {
+      "q": "Is it used to store information?",
+      "a": "No",
+      "turn": 17
+    },
+    {
+      "q": "Is it a physical object?",
+      "a": "Yes",
+      "turn": 18
+    },
+    {
+      "q": "Is it a mathematical constant?",
+      "a": "No",
+      "turn": 19
+    },
+    {
+      "q": "Is it made of composite material?",
+      "a": "Sometimes",
+      "turn": 20
+    }
+  ]
+}

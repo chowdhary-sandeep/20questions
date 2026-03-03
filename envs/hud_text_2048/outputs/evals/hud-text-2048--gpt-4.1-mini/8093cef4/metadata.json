@@ -1,0 +1,1 @@
+{"env": "hud-text-2048", "model": "gpt-4.1-mini", "num_examples": 5, "rollouts_per_example": 3, "sampling_args": {"max_tokens": null}, "date": "2025-08-27", "time": "01:56:28", "avg_reward": 0.6748527063679676, "avg_hud_task_reward_func": 0.6268992162932927, "avg_tool_execution_reward_func": 0.8666666666666667, "avg_combined_format_reward_func": 0.8666666666666667}

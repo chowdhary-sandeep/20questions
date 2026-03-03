@@ -1,0 +1,113 @@
+{
+  "word": "dictionary",
+  "difficulty": 0.295,
+  "frequency": 4.02,
+  "won": false,
+  "final_guess": "memory leak",
+  "n_questions": 20,
+  "n_invalid": 3,
+  "reward": 0.0,
+  "optimality_gap": 6,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it a physical object?",
+      "a": "No",
+      "turn": 2
+    },
+    {
+      "q": "Is it an emotion?",
+      "a": "No",
+      "turn": 3
+    },
+    {
+      "q": "Is it a concept that can be quantified or measured?",
+      "a": "Yes",
+      "turn": 4
+    },
+    {
+      "q": "Is it temperature?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it a mathematical concept?",
+      "a": "No",
+      "turn": 6
+    },
+    {
+      "q": "Is it a concept in physics?",
+      "a": "No",
+      "turn": 7
+    },
+    {
+      "q": "Is it a concept in chemistry?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Is it a concept in computer science?",
+      "a": "Yes",
+      "turn": 9
+    },
+    {
+      "q": "Is it related to time complexity?",
+      "a": "Yes",
+      "turn": 10
+    },
+    {
+      "q": "Is it a notation used to describe asymptotic behavior of functions?",
+      "a": "No",
+      "turn": 11
+    },
+    {
+      "q": "Is it called \"runtime\"?",
+      "a": "No",
+      "turn": 12
+    },
+    {
+      "q": "Is it related to memory usage?",
+      "a": "Yes",
+      "turn": 13
+    },
+    {
+      "q": "Is it memory leak?",
+      "a": "No",
+      "turn": 14
+    },
+    {
+      "q": "Is it a process that automatically reclaims unused memory?",
+      "a": "No",
+      "turn": 15
+    },
+    {
+      "q": "Is it a process of moving data between main memory and secondary storage?",
+      "a": "No",
+      "turn": 16
+    },
+    {
+      "q": "Is it a measure of how much memory an algorithm uses?",
+      "a": "No",
+      "turn": 17
+    },
+    {
+      "q": "Is it a measure of the number of steps an algorithm takes to complete?",
+      "a": "No",
+      "turn": 18
+    },
+    {
+      "q": "Is it related to data compression?",
+      "a": "Yes",
+      "turn": 19
+    },
+    {
+      "q": "Is it a standard file format used for compressing data?",
+      "a": "No",
+      "turn": 20
+    }
+  ]
+}

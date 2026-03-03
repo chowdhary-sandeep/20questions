@@ -1,0 +1,1 @@
+{"env": "nanogpt_speedrun", "model": "gpt-5", "num_examples": 1, "rollouts_per_example": 1, "sampling_args": {"max_tokens": null}, "date": "2025-09-12", "time": "13:00:23", "avg_reward": 0.0, "avg_wrapped_reward": 0.0}

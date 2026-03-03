@@ -1,0 +1,68 @@
+{
+  "word": "dictionary",
+  "difficulty": 0.295,
+  "frequency": 4.02,
+  "won": false,
+  "final_guess": "word",
+  "n_questions": 11,
+  "n_invalid": 3,
+  "reward": 0.0,
+  "optimality_gap": -3,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it a man-made object?",
+      "a": "Yes",
+      "turn": 2
+    },
+    {
+      "q": "Is it electronic?",
+      "a": "Yes",
+      "turn": 3
+    },
+    {
+      "q": "Is it a vehicle?",
+      "a": "No",
+      "turn": 4
+    },
+    {
+      "q": "Is it used primarily for entertainment?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it used for communication?",
+      "a": "No",
+      "turn": 6
+    },
+    {
+      "q": "Is it Computer?",
+      "a": "No",
+      "turn": 7
+    },
+    {
+      "q": "Is it word?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Is it a household appliance?",
+      "a": "No",
+      "turn": 9
+    },
+    {
+      "q": "Is it word?",
+      "a": "No",
+      "turn": 10
+    },
+    {
+      "q": "Is it word?",
+      "a": "No",
+      "turn": 11
+    }
+  ]
+}

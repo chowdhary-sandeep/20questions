@@ -1,0 +1,1 @@
+{"env": "MAPP", "model": "gpt-4.1", "num_examples": 4, "rollouts_per_example": 1, "sampling_args": {"max_tokens": 1024}, "date": "2025-09-14", "time": "21:46:28", "avg_reward": 0.7083872767857143, "avg_success_reward": 0.7083333333333333, "avg_progress_reward": 0.8396577380952381, "avg_collision_penalty": -0.1310546875}

@@ -1,0 +1,68 @@
+{
+  "word": "bench",
+  "difficulty": 0.228,
+  "frequency": 4.39,
+  "won": true,
+  "final_guess": "bench",
+  "n_questions": 11,
+  "n_invalid": 1,
+  "reward": 1.225,
+  "optimality_gap": -3,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it man-made?",
+      "a": "Yes",
+      "turn": 2
+    },
+    {
+      "q": "Is it electronic?",
+      "a": "No",
+      "turn": 3
+    },
+    {
+      "q": "Is it a vehicle?",
+      "a": "No",
+      "turn": 4
+    },
+    {
+      "q": "Is it book?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it furniture?",
+      "a": "Yes",
+      "turn": 6
+    },
+    {
+      "q": "Is it used for sitting?",
+      "a": "Yes",
+      "turn": 7
+    },
+    {
+      "q": "Is it chair?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Is it a sofa?",
+      "a": "No",
+      "turn": 9
+    },
+    {
+      "q": "Is it a stool?",
+      "a": "No",
+      "turn": 10
+    },
+    {
+      "q": "Is it a bench?",
+      "a": "Yes",
+      "turn": 11
+    }
+  ]
+}

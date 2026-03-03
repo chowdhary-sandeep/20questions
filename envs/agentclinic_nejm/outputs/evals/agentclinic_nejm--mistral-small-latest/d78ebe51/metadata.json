@@ -1,0 +1,1 @@
+{"env": "agentclinic_nejm", "model": "mistral-small-latest", "num_examples": 120, "rollouts_per_example": 1, "sampling_args": {"max_tokens": null, "temperature": 0.0}, "date": "2025-10-01 11:00:49", "time_ms": 66650.50315856934, "avg_reward": 0.5916666666666667, "avg_accuracy_reward": 0.5916666666666667}

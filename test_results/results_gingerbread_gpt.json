@@ -1,0 +1,113 @@
+{
+  "word": "gingerbread",
+  "difficulty": 0.336,
+  "frequency": 3.03,
+  "won": false,
+  "final_guess": null,
+  "n_questions": 20,
+  "n_invalid": 3,
+  "reward": 0.0,
+  "optimality_gap": 6,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it made by humans?",
+      "a": "Yes",
+      "turn": 2
+    },
+    {
+      "q": "Is it primarily used for communication?",
+      "a": "No",
+      "turn": 3
+    },
+    {
+      "q": "Is it a household appliance?",
+      "a": "No",
+      "turn": 4
+    },
+    {
+      "q": "Is it an electronic device?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it a piece of furniture?",
+      "a": "No",
+      "turn": 6
+    },
+    {
+      "q": "Is it primarily used for construction or building?",
+      "a": "No",
+      "turn": 7
+    },
+    {
+      "q": "Is it used for storage?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Is it used for entertainment?",
+      "a": "Sometimes",
+      "turn": 9
+    },
+    {
+      "q": "Is it primarily used for entertainment?",
+      "a": "No",
+      "turn": 10
+    },
+    {
+      "q": "Is it primarily used for sports?",
+      "a": "No",
+      "turn": 11
+    },
+    {
+      "q": "Is it primarily used for personal adornment?",
+      "a": "No",
+      "turn": 12
+    },
+    {
+      "q": "Is it primarily used as a tool?",
+      "a": "No",
+      "turn": 13
+    },
+    {
+      "q": "Is it primarily used for music?",
+      "a": "No",
+      "turn": 14
+    },
+    {
+      "q": "Is it primarily used as a decorative item?",
+      "a": "No",
+      "turn": 15
+    },
+    {
+      "q": "Is it used for transportation?",
+      "a": "No",
+      "turn": 16
+    },
+    {
+      "q": "Is it a book?",
+      "a": "No",
+      "turn": 17
+    },
+    {
+      "q": "Is it an emotion?",
+      "a": "No",
+      "turn": 18
+    },
+    {
+      "q": "Does it have a straight edge?",
+      "a": "Sometimes",
+      "turn": 19
+    },
+    {
+      "q": "Does it have a three-dimensional form?",
+      "a": "Yes",
+      "turn": 20
+    }
+  ]
+}

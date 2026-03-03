@@ -1,0 +1,113 @@
+{
+  "word": "penicillin",
+  "difficulty": 0.402,
+  "frequency": 3.04,
+  "won": false,
+  "final_guess": "waterfall",
+  "n_questions": 20,
+  "n_invalid": 5,
+  "reward": 0.0,
+  "optimality_gap": 6,
+  "qa_pairs": [
+    {
+      "q": "Is it a living thing?",
+      "a": "No",
+      "turn": 1
+    },
+    {
+      "q": "Is it a tool?",
+      "a": "Yes",
+      "turn": 2
+    },
+    {
+      "q": "Is it used in the kitchen?",
+      "a": "No",
+      "turn": 3
+    },
+    {
+      "q": "Is it a hand tool?",
+      "a": "No",
+      "turn": 4
+    },
+    {
+      "q": "Is it a piece of furniture?",
+      "a": "No",
+      "turn": 5
+    },
+    {
+      "q": "Is it a type of clock or watch?",
+      "a": "No",
+      "turn": 6
+    },
+    {
+      "q": "Is it used for reading?",
+      "a": "No",
+      "turn": 7
+    },
+    {
+      "q": "Is it a type of light source that uses electricity?",
+      "a": "No",
+      "turn": 8
+    },
+    {
+      "q": "Does it reflect light?",
+      "a": "No",
+      "turn": 9
+    },
+    {
+      "q": "Is it used for decoration?",
+      "a": "No",
+      "turn": 10
+    },
+    {
+      "q": "Is it used for transportation?",
+      "a": "No",
+      "turn": 11
+    },
+    {
+      "q": "Does it contain any liquid?",
+      "a": "Sometimes",
+      "turn": 12
+    },
+    {
+      "q": "Is it bottle?",
+      "a": "No",
+      "turn": 13
+    },
+    {
+      "q": "Is it made of glass?",
+      "a": "No",
+      "turn": 14
+    },
+    {
+      "q": "Is it made of plastic?",
+      "a": "No",
+      "turn": 15
+    },
+    {
+      "q": "Is it a type of container?",
+      "a": "No",
+      "turn": 16
+    },
+    {
+      "q": "Is it used for illumination?",
+      "a": "No",
+      "turn": 17
+    },
+    {
+      "q": "Is it a natural phenomenon?",
+      "a": "Yes",
+      "turn": 18
+    },
+    {
+      "q": "Is it a weather-related phenomenon?",
+      "a": "No",
+      "turn": 19
+    },
+    {
+      "q": "Is it waterfall?",
+      "a": "No",
+      "turn": 20
+    }
+  ]
+}
