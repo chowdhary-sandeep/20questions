@@ -2,26 +2,25 @@
 
 ### Overview
 - **Environment ID**: `twenty-questions`
-- **Description**: A multi-turn 20 Questions game. An LLM agent identifies a secret English noun by asking up to 20 yes/no questions, answered by an LLM oracle. Wrong guesses count as a turn ("No, that's not it"). Correct guesses end the episode with a reward scaled by efficiency.
-- **Tags**: multi-turn, game, reasoning, language, train, eval
+- **Description**: A multi-turn 20 Questions game. An LLM agent identifies a secret English noun by asking up to 20 yes/no questions, answered by an LLM oracle. Wrong guesses count as a turn. Correct guesses end the episode with a reward scaled by efficiency.
 
 ### Dataset
-- **Pool**: 8,213 English nouns from WordNet, filtered by Brysbaert concreteness ratings (Brysbaert et al., 2014) and Zipf word frequency (wordfreq)
-- **Tiers**:
-  - Tier 1 — concrete (concreteness ≥ 4.0): ~4,200 words (dog, spoon, volcano, penicillin)
-  - Tier 2 — moderate (3.0–4.0): ~2,800 words
-  - Tier 3 — borderline abstract (2.5–3.0): ~1,200 words
-- **Difficulty score**: `0.4 * (7 - zipf_freq) / 5 + 0.6 * (5 - concreteness) / 4`
+- **Pool**: 8,155 English nouns from WordNet, filtered by Brysbaert concreteness ratings and Zipf word frequency
+- **Tiers** (percentile-based on difficulty, ascending — tier 1 = easiest):
+  - Tier 1 — easiest 1%: ~81 words — baby, eyes, card, road, door, daughter, neck, engine, bill, moon
+  - Tier 2 — 1st–5th pct: ~326 words — mother, branch, cotton, diamond, horn, tower, oven, chick, knight, pope
+  - Tier 3 — 5th–10th pct: ~408 words — fossil, shorts, flood, canyon, elevator, bulb, coconut, vaccine
+  - Tier 4 — 10th–20th pct: ~816 words — rhino, condo, cologne, dairy, electronics, lasagna, swimsuit
+  - Tier 5 — rest (> 20th pct): ~6,524 words — machete, psychiatrist, wasabi, alternator, underpass, featherweight
 
 ### Task
-- **Type**: Multi-turn, adversarial game
 - **Parser**: `XMLParser` with `<question>` and `<guess>` fields
-- **Oracle**: LLM (configurable, default: `gpt-4.1-mini`) receives the secret word and answers each question with `Yes | No | Sometimes | Unclear`
+- **Oracle**: separate LLM that knows the secret word and answers each question with `Yes | No | Sometimes | Unclear`
 - **Episode end**: correct guess OR 20 turns exhausted
 
 ### Reward
 ```
-correct guess at turn t:  1.0 + 0.5 * (20 - t) / 20   →  [1.0, 1.5]
+correct guess at turn t:  1.0 + 0.5 * (20 - t) / 19   →  [1.0, 1.5]
 wrong guess / timeout:    0.0
 ```
 Reward is **sparse and episode-level only** — no per-turn shaping. This makes credit assignment harder and is intentional for RL training signal quality.
@@ -31,28 +30,35 @@ Reward is **sparse and episode-level only** — no per-turn shaping. This makes 
 prime eval run twenty-questions
 ```
 
-With args:
+Player and oracle are **independently configurable** — use any model for each:
 ```bash
+# Same model for both (OPENAI_API_KEY used for player and oracle)
 prime eval run twenty-questions \
   -m gpt-4.1-mini \
-  -n 50 -r 1 \
   -a '{"tier": 1, "oracle_model": "gpt-4.1-mini"}'
-```
 
-### Required Environment Variables
-| Variable | Description |
-|---|---|
-| `OPENAI_API_KEY` | API key for the oracle model (default) |
+# Different models: strong oracle, weaker player being trained
+prime eval run twenty-questions \
+  -m gpt-4o-mini \
+  -a '{"tier": 1, "oracle_model": "gpt-4.1"}'
+
+# Local player (vLLM/LM Studio), hosted oracle
+prime eval run twenty-questions \
+  -m my-local-model \
+  -b "http://localhost:8000/v1" \
+  -a '{"tier": 2, "oracle_model": "gpt-4.1-mini", "oracle_base_url": "https://api.openai.com/v1"}'
+```
 
 ### Environment Arguments
 | Argument | Type | Default | Description |
 |---|---|---|---|
-| `tier` | int | `1` | Word difficulty tier: 1=concrete, 2=moderate, 3=abstract |
-| `oracle_model` | str | `"gpt-4.1-mini"` | Model used to answer questions |
-| `oracle_base_url` | str | `"https://api.openai.com/v1"` | Oracle API base URL |
+| `tier` | int | `1` | Word difficulty tier (1–5): 1=easiest (~81 words), 5=hardest (~6,524 words) |
+| `oracle_model` | str | `"gpt-4.1-mini"` | Oracle LLM — answers yes/no questions. Independent of player model (`-m`). |
+| `oracle_base_url` | str | `"https://api.openai.com/v1"` | Oracle API base URL (use any OpenAI-compatible endpoint) |
 | `oracle_api_key_var` | str | `"OPENAI_API_KEY"` | Env var holding the oracle API key |
 | `num_train_examples` | int | `2000` | Words sampled for training |
 | `num_eval_examples` | int | `50` | Words sampled for evaluation |
+| `system_prompt` | str | `DEFAULT_SYSTEM_PROMPT` | System prompt for the player agent |
 | `seed` | int | `0` | Random seed |
 
 ### Metrics
@@ -63,11 +69,5 @@ prime eval run twenty-questions \
 | `avg_questions` | Average turns used per episode |
 | `efficiency_bonus` | Average `reward - 1.0` for wins (0 = used all 20 questions, 0.5 = guessed on turn 1) |
 
-### Changelog
-#### v0.1.0
-- Initial release
-- Pool: 8,213 WordNet nouns enriched with Brysbaert concreteness ratings
-- LLM oracle with Yes/No/Sometimes/Unclear responses
-- Wrong guesses treated as questions (count toward 20-turn limit)
-- Sparse episode-level reward only
-- WordNet synonym/hyponym matching for correct-guess evaluation
+### See Also
+[MiniMax plays 20 Questions](https://huggingface.co/spaces/echoboi/minimax2-1-plays-20-questions)

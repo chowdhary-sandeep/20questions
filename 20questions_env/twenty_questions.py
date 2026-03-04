@@ -10,11 +10,13 @@ Reward: sparse, episode-level only.
 
 import json
 import os
+import random
 import re
 from pathlib import Path
 
 import verifiers as vf
-from openai import OpenAI
+from datasets import Dataset
+from openai import AsyncOpenAI
 
 # ── bundled pool ──────────────────────────────────────────────────────────────
 _POOL_PATH = Path(__file__).parent / "pool" / "pool_enriched.json"
@@ -40,6 +42,8 @@ Strategy:
 - Guess only when confident. Earlier correct guesses score higher.
 - A wrong guess counts as one of your 20 turns — it will be answered "No, that's not it."
 - Do NOT output any text outside the tag."""
+
+_INITIAL_USER_MSG = "I'm thinking of something. Ask me yes/no questions to identify it!"
 
 MAX_QUESTIONS = 20
 
@@ -92,28 +96,58 @@ def _is_correct(guess: str, target: str) -> bool:
     return False
 
 
-def _reward(correct: bool, n_questions: int) -> float:
-    if not correct:
-        return 0.0
-    efficiency = (MAX_QUESTIONS - n_questions) / MAX_QUESTIONS
-    return round(1.0 + 0.5 * efficiency, 4)
+# ── reward function ───────────────────────────────────────────────────────────
+def twenty_questions_reward(completion, answer, **kwargs) -> float:
+    """
+    Sparse episode-level reward.
+    Walks the full completion (all messages after the initial prompt) and
+    returns 1.0 + efficiency bonus if a correct guess was made, else 0.0.
+    """
+    word = answer  # state["answer"] = secret word string
+    n_q = 0
+    for m in completion:
+        if m["role"] != "assistant":
+            continue
+        atype, atext = _parse_action(m["content"])
+        if atype in ("question", "guess") and not re.fullmatch(_PLACEHOLDERS, atext):
+            n_q += 1
+        if atype == "guess" and _is_correct(atext, word):
+            efficiency = (MAX_QUESTIONS - n_q) / (MAX_QUESTIONS - 1)
+            return round(1.0 + 0.5 * efficiency, 4)
+    return 0.0
 
 
-# ── oracle ────────────────────────────────────────────────────────────────────
-def _call_oracle(client: OpenAI, model: str, word: str, question: str) -> str:
-    resp = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": _ORACLE_SYSTEM.format(word=word)},
-            {"role": "user", "content": question},
-        ],
-        temperature=0.0,
-        max_tokens=64,
-    )
-    content = (resp.choices[0].message.content or "").strip()
-    content = _THINK_RE.sub("", content).strip()
-    m = re.search(r"\b(yes|no|sometimes|unclear)\b", content, re.IGNORECASE)
-    return m.group(1).capitalize() if m else "Unclear"
+# ── dataset builder ───────────────────────────────────────────────────────────
+def _build_datasets(
+    pool: list[dict],
+    num_train: int,
+    num_eval: int,
+    seed: int,
+) -> tuple[Dataset, Dataset]:
+    rng = random.Random(seed)
+    shuffled = pool[:]
+    rng.shuffle(shuffled)
+
+    # hold out eval set, then take up to num_train for training
+    n_eval = min(num_eval, max(0, len(shuffled) - 1))
+    eval_rows = shuffled[:n_eval]
+    train_rows = shuffled[n_eval:][:num_train]
+
+    def to_dataset(rows: list[dict]) -> Dataset:
+        # Build initial user message per example; system prompt is prepended by
+        # the framework via system_prompt= passed to Environment.__init__.
+        prompts = [
+            [{"role": "user", "content": _INITIAL_USER_MSG}]
+            for _ in rows
+        ]
+        return Dataset.from_dict({
+            "prompt": prompts,
+            "answer": [r["word"] for r in rows],
+            "difficulty": [r["difficulty"] for r in rows],
+            "tier": [r["tier"] for r in rows],
+        })
+
+    return to_dataset(train_rows), to_dataset(eval_rows)
 
 
 # ── env class ─────────────────────────────────────────────────────────────────
@@ -123,35 +157,26 @@ class TwentyQuestionsEnv(vf.MultiTurnEnv):
 
     The agent asks yes/no questions (or makes guesses). Each turn the oracle
     answers. Wrong guesses count as a turn and are answered "No". A correct
-    guess ends the episode with reward 1.0–1.5. Running out of questions gives
-    reward 0.0.
+    guess ends the episode immediately with reward 1.0–1.5. Running out of
+    questions gives reward 0.0.
     """
 
     def __init__(
         self,
-        pool: list[dict],
-        oracle_client: OpenAI,
+        oracle_client: AsyncOpenAI,
         oracle_model: str,
         **kwargs,
     ):
-        self._pool = pool
         self._oracle_client = oracle_client
         self._oracle_model = oracle_model
         super().__init__(**kwargs)
 
-    # ── verifiers interface ────────────────────────────────────────────────────
-    def load_dataset(self) -> list[dict]:
-        return [{"word": e["word"], "difficulty": e["difficulty"]} for e in self._pool]
-
-    def get_system_prompt(self, example: dict) -> str:
-        return DEFAULT_SYSTEM_PROMPT
-
-    def env_response(self, messages: list[dict], answer: dict, **kwargs) -> str:
+    async def env_response(self, messages, state, **kwargs):
         """
         Called after each agent turn. Returns oracle answer or game-end message.
-        `answer` is the example dict {"word": ..., "difficulty": ...}.
+        Sets state["final_env_response"] on correct guess to end the episode.
         """
-        word = answer["word"]
+        word = state["answer"]
         last = next(
             (m["content"] for m in reversed(messages) if m["role"] == "assistant"), ""
         )
@@ -159,39 +184,39 @@ class TwentyQuestionsEnv(vf.MultiTurnEnv):
 
         # placeholder / empty guess → invalid feedback
         if action_type == "guess" and re.fullmatch(_PLACEHOLDERS, action_text):
-            return "That wasn't a real guess. Use <guess>word</guess>."
+            response = "That wasn't a real guess. Use <guess>word</guess>."
 
-        # correct guess → signal end
-        if action_type == "guess" and _is_correct(action_text, word):
-            return f"[CORRECT] Yes, that's it!"
+        # correct guess → signal episode end
+        elif action_type == "guess" and _is_correct(action_text, word):
+            msg = [{"role": "user", "content": "[CORRECT] Yes, that's it!"}]
+            state["final_env_response"] = msg
+            return msg
 
-        # wrong guess → counts as turn with "No" answer
-        if action_type == "guess":
-            return f"No, that's not it."
+        # wrong guess → counts as a turn, oracle answers "No"
+        elif action_type == "guess":
+            response = "No, that's not it."
 
         # question → call oracle
-        if action_type == "question":
-            return _call_oracle(
-                self._oracle_client, self._oracle_model, word, action_text
+        elif action_type == "question":
+            resp = await self._oracle_client.chat.completions.create(
+                model=self._oracle_model,
+                messages=[
+                    {"role": "system", "content": _ORACLE_SYSTEM.format(word=word)},
+                    {"role": "user", "content": action_text},
+                ],
+                temperature=0.0,
+                max_tokens=64,
             )
+            content = (resp.choices[0].message.content or "").strip()
+            content = _THINK_RE.sub("", content).strip()
+            m = re.search(r"\b(yes|no|sometimes|unclear)\b", content, re.IGNORECASE)
+            response = m.group(1).capitalize() if m else "Unclear"
 
         # invalid format
-        return "Invalid format. Use <question>...</question> or <guess>...</guess>."
+        else:
+            response = "Invalid format. Use <question>...</question> or <guess>...</guess>."
 
-    def rubric(self, trajectory: list[dict], example: dict) -> float:
-        word = example["word"]
-        n_q = 0
-        for m in trajectory:
-            if m["role"] != "assistant":
-                continue
-            atype, atext = _parse_action(m["content"])
-            if atype in ("question", "guess") and not re.fullmatch(
-                _PLACEHOLDERS, atext
-            ):
-                n_q += 1
-            if atype == "guess" and _is_correct(atext, word):
-                return _reward(True, n_q)
-        return 0.0
+        return [{"role": "user", "content": response}]
 
 
 # ── loader ────────────────────────────────────────────────────────────────────
@@ -210,10 +235,12 @@ def load_environment(
     Load the 20 Questions environment.
 
     Args:
-        tier: Word difficulty tier.
-               1 = concrete objects (concreteness >= 4.0, ~4,200 words)
-               2 = moderate (3.0–4.0, ~2,800 words)
-               3 = borderline abstract (2.5–3.0, ~1,200 words)
+        tier: Word difficulty tier (percentile-based on combined difficulty score).
+               1 = easiest 1%  (~81 words: common + concrete, e.g. baby, ball, fish)
+               2 = 1st–5th pct (~326 words)
+               3 = 5th–10th pct (~408 words)
+               4 = 10th–20th pct (~816 words)
+               5 = hardest, > 20th pct (~6,524 words: rare and/or abstract)
         oracle_model: Model used to answer yes/no questions.
         oracle_base_url: API base URL for the oracle model.
         oracle_api_key_var: Environment variable name holding the oracle API key.
@@ -226,30 +253,33 @@ def load_environment(
     with open(_POOL_PATH) as f:
         pool_all = json.load(f)
 
-    tier_ranges = {1: (4.0, 9.9), 2: (3.0, 4.0), 3: (2.5, 3.0)}
-    lo, hi = tier_ranges.get(tier, (4.0, 9.9))
-    pool = [e for e in pool_all if lo <= e.get("concreteness", 0.0) < hi]
+    if tier not in range(1, 6):
+        raise ValueError(f"tier must be 1–5, got {tier}")
+    pool = [e for e in pool_all if e.get("tier") == tier]
 
     if not pool:
         raise ValueError(f"No words found for tier={tier}")
 
-    # oracle client
+    # build datasets
+    train_ds, eval_ds = _build_datasets(pool, num_train_examples, num_eval_examples, seed)
+
+    # oracle client (async required for env_response)
     api_key = os.environ.get(oracle_api_key_var, "")
-    oracle_client = OpenAI(api_key=api_key, base_url=oracle_base_url)
+    oracle_client = AsyncOpenAI(api_key=api_key, base_url=oracle_base_url)
 
     parser = vf.XMLParser(fields=["question", "guess"], answer_field="guess")
+
     rubric = vf.Rubric(parser=parser)
+    rubric.add_reward_func(twenty_questions_reward)
 
     env = TwentyQuestionsEnv(
-        pool=pool,
         oracle_client=oracle_client,
         oracle_model=oracle_model,
-        num_train_examples=num_train_examples,
-        num_eval_examples=num_eval_examples,
+        dataset=train_ds,
+        eval_dataset=eval_ds,
         system_prompt=system_prompt,
         parser=parser,
         rubric=rubric,
-        seed=seed,
         max_turns=MAX_QUESTIONS + 4,
         **kwargs,
     )
